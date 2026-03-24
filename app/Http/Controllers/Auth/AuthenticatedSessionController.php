@@ -33,11 +33,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // 1. Obtenemos al usuario que acaba de loguearse
+        $user = Auth::user();
+
+        // 2. Redirección por ROL
+        if ($user->rol === 'chofer') {
+            return redirect()->route('despacho.mapa');
+        }
+
+        // 3. Redirección para los demás (Admin, Oficina, Preventista)
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destroy an authenticated session (EL QUE FALTABA).
      */
     public function destroy(Request $request): RedirectResponse
     {

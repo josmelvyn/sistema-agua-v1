@@ -13,6 +13,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\UserController; 
 use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\FacturacionController;
+use App\Http\Controllers\CajaController;
 
 // RUTA PÚBLICA (WELCOME)
 Route::get('/', function () {
@@ -64,12 +65,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+   Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
     // DESPACHO
     Route::get('/despacho/panel', [DespachoController::class, 'panel'])->name('despacho.panel');
     Route::get('/despacho/mapa', [DespachoController::class, 'mapaDespacho'])->name('despacho.mapa');
     Route::get('/despachos/{id}/reporte', [DespachoController::class, 'reporteCarga'])->name('despachos.reporte');
     Route::post('/despachos/guardar', [DespachoController::class, 'store'])->name('despacho.store');
     Route::get('/despachos/{id}/editar', [DespachoController::class, 'edit'])->name('despachos.edit');
+    Route::get('/despacho/panel', [DespachoController::class, 'panel'])->name('despachos.panel');
     Route::get('/despacho/panel', [DespachoController::class, 'panel'])->name('despachos.panel');
     Route::post('/despachos/{id}/actualizar', [DespachoController::class, 'update'])->name('despachos.update');
    //PEDIDOS
@@ -80,8 +84,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
    Route::get('/facturacion', [FacturacionController::class, 'index'])->name('facturacion.index');
    //VENTANILLA
    Route::get('/ventanilla', [PedidoController::class, 'ventanilla'])->name('ventanilla.create');
-
-   });
+    //ENTREGA CHOFER
+    Route::post('/pedidos/{id}/entregar', [App\Http\Controllers\PedidoController::class, 'entregar'])->name('pedidos.entregar');
+    Route::get('/mi-ruta', [DespachoController::class, 'mapaChofer'])->name('despacho.mapa');
+Route::get('/mi-ruta', [DespachoController::class, 'mapaDespacho'])->name('despacho.chofer');
+    Route::post('/pedidos/{id}/entregar-chofer', [App\Http\Controllers\PedidoController::class, 'marcarEntregado'])->name('pedidos.entregar_chofer');
+   //CAJA
+    Route::get('/caja/cuadre/{chofer_id}', [CajaController::class, 'liquidarChofer'])->name('caja.cuadre');
+    Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
+    Route::post('/caja/finalizar', [CajaController::class, 'finalizarCuadre'])->name('caja.finalizar');
+    Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
+    });
 
 
 require __DIR__.'/auth.php';

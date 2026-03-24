@@ -19,8 +19,14 @@ class Chofer extends Model
         'esta_en_ruta'
     ];
 
+      public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'chofer_id');
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+    
 }

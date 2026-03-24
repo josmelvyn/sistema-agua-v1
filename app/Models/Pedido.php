@@ -38,6 +38,6 @@ class Pedido extends Model
     // Relación con el Chofer
     public function chofer()
     {
-        return $this->belongsTo(Chofer::class);
+        return $this->belongsTo(Chofer::class, 'chofer_id');
     }
 }

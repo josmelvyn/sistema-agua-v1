@@ -180,4 +180,23 @@ public function update(Request $request, $id)
             ->get(),
     ]);
     }
+    //chofer
+ public function mapaDespacho() 
+{
+    // Buscamos el registro del chofer asociado al usuario logueado
+    $chofer = \App\Models\Chofer::where('user_id', auth()->id())->first();
+
+    if (!$chofer) {
+        return Inertia::render('Despacho/MapaChofer', ['pedidos' => []]);
+    }
+
+    // Traemos los pedidos asignados a ese chofer en estado 'en_camino'
+    $pedidos = \App\Models\Pedido::where('chofer_id', $chofer->id)
+        ->where('estado', 'en_camino')
+        ->with('puntoVenta')->get();
+
+    return Inertia::render('Despacho/MapaChofer', [
+        'pedidos' => $pedidos
+    ]);
+}
 }
