@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function Cuadre({ auth, totales, chofer, fecha }) {
+export default function Cuadre({ auth, totales, chofer, fecha, detalles }) {
     const [entregado, setEntregado] = useState(0);
     const { data, setData, post, processing } = useForm({
     chofer_id: chofer.id,
@@ -37,6 +37,51 @@ export default function Cuadre({ auth, totales, chofer, fecha }) {
                             </div>
                         </div>
                     </div>
+
+                    {/* --- TABLA DE AUDITORÍA DE PEDIDOS --- */}
+<div className="bg-white shadow-xl rounded-[2rem] overflow-hidden border border-gray-100 mt-8">
+    <div className="bg-gray-50 p-6 border-b flex justify-between items-center">
+        <h3 className="font-black text-gray-700 uppercase text-xs tracking-widest">📋 Auditoría de Entregas ({detalles.length})</h3>
+        <span className="text-[10px] text-gray-400 italic">Revisa si hay pedidos duplicados aquí</span>
+    </div>
+    <div className="max-h-96 overflow-y-auto">
+        <table className="w-full text-left text-sm">
+            <thead className="bg-gray-50 sticky top-0 text-[10px] font-black text-gray-400 uppercase border-b">
+                <tr>
+                    <th className="p-4">ID</th>
+                    <th className="p-4">Cliente</th>
+                    <th className="p-4 text-center">Tipo</th>
+                    <th className="p-4 text-right">Monto</th>
+                    <th className="p-4 text-center">Hora</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+                {detalles.map((p) => (
+                    <tr key={p.id} className="hover:bg-blue-50/50 transition-colors">
+                        <td className="p-4 font-bold text-blue-600">#{p.id}</td>
+                        <td className="p-4 font-black uppercase text-xs">{p.punto_venta?.nombre_negocio}</td>
+                        <td className="p-4 text-center">
+                            <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase ${p.metodo_pago === 'credito' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                                {p.metodo_pago}
+                            </span>
+                        </td>
+                        <td className="p-4 text-right font-black text-gray-700">
+                            ${Number(p.total).toLocaleString()}
+                        </td>
+                        <td className="p-4 text-center text-[10px] text-gray-400">
+                            {new Date(p.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+    <div className="p-4 bg-gray-50 border-t text-center">
+        <p className="text-[10px] text-gray-400 font-bold uppercase">
+            Suma Total en Tabla: <span className="text-gray-900">${detalles.reduce((acc, p) => acc + Number(p.total), 0).toLocaleString()}</span>
+        </p>
+    </div>
+</div>
 
                     {/* Conteo Físico */}
                     <div className="bg-gray-900 p-8 rounded-[2rem] shadow-xl text-white">

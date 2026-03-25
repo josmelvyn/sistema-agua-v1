@@ -82,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
    Route::post('/facturacion/aprobar/{id}', [App\Http\Controllers\FacturacionController::class, 'aprobarYFacturar'])
     ->name('pedidos.aprobar'); 
    Route::get('/facturacion', [FacturacionController::class, 'index'])->name('facturacion.index');
+   Route::get('/facturacion', [FacturacionController::class, 'index'])->name('facturacion.index');
+    Route::get('/facturacion/editar/{id}', [FacturacionController::class, 'edit'])->name('facturacion.edit');
+Route::post('/facturacion/update/{id}', [FacturacionController::class, 'update'])->name('facturacion.update');
+   Route::post('/facturacion/aprobar/{id}', [FacturacionController::class, 'aprobarYFacturar'])->name('pedidos.aprobar');
    //VENTANILLA
    Route::get('/ventanilla', [PedidoController::class, 'ventanilla'])->name('ventanilla.create');
     //ENTREGA CHOFER
@@ -93,6 +97,7 @@ Route::get('/mi-ruta', [DespachoController::class, 'mapaDespacho'])->name('despa
     Route::get('/caja/cuadre/{chofer_id}', [CajaController::class, 'liquidarChofer'])->name('caja.cuadre');
     Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
     Route::post('/caja/finalizar', [CajaController::class, 'finalizarCuadre'])->name('caja.finalizar');
+    Route::get('/caja/reporte-general', [CajaController::class, 'reporteGeneral'])->name('caja.reporte');
     Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
     });
 

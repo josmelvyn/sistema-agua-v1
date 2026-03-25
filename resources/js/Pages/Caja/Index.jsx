@@ -14,6 +14,20 @@ export default function Index({ auth, choferes }) {
                     <Link href="#" className="text-xs font-black text-blue-600 uppercase hover:underline">📂 Ver Historial de Cierres</Link>
                 </div>
 
+                {/* Ponlo arriba de la lista de choferes */}
+<div className="flex justify-between items-center mb-8 bg-slate-900 p-6 rounded-[2rem] shadow-lg">
+    <div>
+        <h3 className="text-white font-black uppercase tracking-tighter">Resumen de Operaciones</h3>
+        <p className="text-slate-400 text-[10px] font-bold uppercase">Reporte consolidado de hoy</p>
+    </div>
+    <Link 
+        href={route('caja.reporte')} 
+        className="bg-cyan-400 hover:bg-cyan-500 text-slate-900 px-6 py-3 rounded-2xl font-black text-xs shadow-lg transition-all active:scale-95"
+    >
+        📊 GENERAR CIERRE DIARIO
+    </Link>
+</div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {choferes.length > 0 ? choferes.map(c => (
                         <div key={c.id} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 flex flex-col justify-between hover:ring-4 hover:ring-blue-50 transition-all group">

@@ -12,6 +12,7 @@ class Pedido extends Model
         'punto_venta_id', 
         'chofer_id',
         'ruta_id',
+        'metodo_pago',
         'despacho_id',
         'tipo',
         'estado',

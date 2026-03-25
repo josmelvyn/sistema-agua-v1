@@ -82,10 +82,10 @@ class CajaController extends Controller
 
             // Marcamos como pagados los pedidos que acabamos de cobrar
             Pedido::where('chofer_id', $request->chofer_id)
-                ->where('estado', 'entregado')
-                ->where('pagado', false)
-                ->whereDate('updated_at', now()->startOfDay())
-                ->update(['pagado' => true]);
+    ->where('estado', 'entregado')
+    ->where('pagado', false) // Buscamos los que falten por procesar
+    ->whereDate('updated_at', now()->startOfDay())
+    ->update(['pagado' => true]); // Marcamos TODOS como liquidados para que salgan del Index
         });
 
         $mensaje = $diferencia < 0 
@@ -94,4 +94,44 @@ class CajaController extends Controller
 
         return redirect()->route('caja.index')->with('message', $mensaje);
     }
+
+    public function reporteGeneral()
+{
+    $hoy = now()->startOfDay();
+
+    // 1. Resumen de dinero por método de pago
+    $resumenMetodos = Pedido::whereDate('updated_at', $hoy)
+        ->where('estado', 'entregado')
+        ->selectRaw("
+            metodo_pago,
+            SUM(total) as monto,
+            COUNT(*) as cantidad
+        ")
+        ->groupBy('metodo_pago')
+        ->get();
+
+    // 2. Detalle de liquidaciones por chofer (incluyendo deudas generadas hoy)
+    $liquidacionesChoferes = Chofer::with('user')
+        ->withCount(['pedidos' => function($q) use ($hoy) {
+            $q->where('estado', 'entregado')->whereDate('updated_at', $hoy);
+        }])
+        ->get()
+        ->map(function($chofer) use ($hoy) {
+            $stats = Pedido::where('chofer_id', $chofer->id)
+                ->whereDate('updated_at', $hoy)
+                ->where('estado', 'entregado')
+                ->selectRaw("SUM(CASE WHEN metodo_pago = 'contado' THEN total ELSE 0 END) as efectivo")
+                ->first();
+            
+            $chofer->efectivo_ruta = $stats->efectivo ?? 0;
+            return $chofer;
+        });
+
+    return Inertia::render('Caja/ReporteGeneral', [
+        'resumen' => $resumenMetodos,
+        'choferes' => $liquidacionesChoferes,
+        'fecha' => now()->format('d/m/Y')
+    ]);
+}
+
 }
